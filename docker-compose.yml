@@ -1,0 +1,78 @@
+services:
+  # the frontend container
+  web:
+    platform: linux/amd64
+    image: codegouvfr/sill-web:1.43.22
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # the api that the frontend will call
+  api:
+    platform: linux/amd64
+    image: codegouvfr/sill-api:1.43.22
+    depends_on:
+      - postgres
+    env_file: .env
+    restart: unless-stopped
+    command: yarn start
+
+  # this is the background task that will update the database every 4 hours
+  update:
+    platform: linux/amd64
+    image: codegouvfr/sill-api:1.43.22
+    depends_on:
+      - api
+      - postgres
+    env_file: .env
+    restart: always
+    # runs every 4 hours (240 minutes)
+    command: yarn update-then-wait 240
+
+  # this is nginx managing the proxy (sending /api requests to the api container, the rest to the web container)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8090:80"
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/
+    depends_on:
+      - api
+      - web
+    restart: unless-stopped
+
+  # optional, as you DB could be hosted elsewhere
+  postgres:
+    image: postgres:16
+    shm_size: 256m
+    environment:
+      POSTGRES_LOG_STATEMENTS: all
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./docker-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # optional, gives a UI (old school one but still useful) to access the data in the DB
+  adminer:
+    image: adminer
+    ports:
+      - "8091:8080"
+    restart: unless-stopped
+
+  # optional, you can use your own OIDC provider
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    container_name: keycloak
+    environment:
+      KC_DB: h2 # not recommanded for production, you should an actual DB
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: admin
+    ports:
+      - "8081:8080"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/auth/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
