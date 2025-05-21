@@ -41,7 +41,7 @@ services:
       - web
     restart: unless-stopped
 
-  # optional, as you DB could be hosted elsewhere
+  # optional, as your DB could be hosted elsewhere
   postgres:
     image: postgres:16
     shm_size: 256m
@@ -60,24 +60,3 @@ services:
     ports:
       - "8091:8080"
     restart: unless-stopped
-
-  # optional, you can use your own OIDC provider
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.2
-    container_name: keycloak
-    environment:
-      KC_DB: dev-file # not suitable for production, you should an actual DB
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_FEATURES: preview
-    ports:
-      - "8081:8080"
-    volumes:
-      - ./keycloak/import:/opt/keycloak/data/import
-    command: ["start-dev", "--import-realm"]
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8081/health/ready" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
