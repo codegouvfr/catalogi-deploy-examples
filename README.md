@@ -9,14 +9,17 @@ This is a simple example of how to deploy a Catalogi instance, using Docker and 
 
 ## Configure
 
-First, create a `.env` file in the root of the project, with the following content:
+First, copy the  `.env.sample` and name it `.env` in the root of the project.
 
-## Keycloak Configuration
+```bash
+cp .env.sample .env
+```
 
-The deployment includes a pre-configured Keycloak instance with:
+Then, edit the `.env` file to set the environment variables. 
+You can use the default values for dev.
 
-- A "catalogi" realm automatically loaded on startup
-- Two pre-configured users:
-  - Regular user: username `user`, password `password`
-  - Admin user: username `admin`, password `admin`
-- A pre-configured client for the Catalogi application
+```bash
+
+## Auth Configuration
+
+The deployment uses https://auth.code.gouv.fr as the OIDC provider. It is the original first project using Catalogi, this is why it is used as the default. However, you should use your own OIDC provider (or use Keycloak to create your own).
