@@ -2,7 +2,7 @@ services:
   # the frontend container
   web:
     platform: linux/amd64
-    image: codegouvfr/sill-web:1.43.23
+    image: codegouvfr/sill-web:1.43.24
     depends_on:
       - api
     restart: unless-stopped
