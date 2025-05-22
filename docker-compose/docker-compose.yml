@@ -16,6 +16,8 @@ services:
     env_file: .env
     restart: unless-stopped
     command: yarn start
+    volumes:
+      - ./customization:/app/api/dist/src/customization
 
   # this is the background task that will update the database every 4 hours
   update:
