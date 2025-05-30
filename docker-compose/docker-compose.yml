@@ -2,15 +2,16 @@ services:
   # the frontend container
   web:
     platform: linux/amd64
-    image: codegouvfr/sill-web:1.43.24
+    image: codegouvfr/sill-web:1.43.25
     depends_on:
       - api
     restart: unless-stopped
+    env_file: .env
 
   # the api that the frontend will call
   api:
     platform: linux/amd64
-    image: codegouvfr/sill-api:1.43.24
+    image: codegouvfr/sill-api:1.43.25
     depends_on:
       - postgres
     env_file: .env
@@ -22,7 +23,7 @@ services:
   # this is the background task that will update the database every 4 hours
   update:
     platform: linux/amd64
-    image: codegouvfr/sill-api:1.43.24
+    image: codegouvfr/sill-api:1.43.25
     depends_on:
       - api
       - postgres

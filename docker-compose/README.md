@@ -18,8 +18,6 @@ cp .env.sample .env
 Then, edit the `.env` file to set the environment variables. 
 You can use the default values for dev.
 
-```bash
-
 ## Auth Configuration
 
 The deployment uses https://auth.code.gouv.fr as the OIDC provider. It is the original first project using Catalogi, this is why it is used as the default. However, you should use your own OIDC provider (or use Keycloak to create your own).
